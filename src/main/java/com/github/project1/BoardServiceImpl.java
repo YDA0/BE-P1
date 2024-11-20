@@ -36,4 +36,22 @@ public class BoardServiceImpl implements BoardService{
     public List<Board> findAll() {
         return boardRepository.findAll();
     }
+
+
+    public Board findByBoardId(Long boardId) {
+        try{
+            return boardRepository.findById(boardId)
+                    .orElseThrow(() -> new RuntimeException("Board not found with ID: " + boardId));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while finding Board with ID: " + e);
+        }
+    }
+
+    public Board countViews(Long boardId) {
+        Board byBoardId = findByBoardId(boardId);
+        Integer views = byBoardId.getViews();
+        byBoardId.setViews(++views);
+        return boardRepository.save(byBoardId);
+    }
 }

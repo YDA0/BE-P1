@@ -4,16 +4,14 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,14 +23,14 @@ import java.util.Map;
 public class BoardController {
 
     private final BoardService boardService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/board")
     public String board(Model model, HttpSession session) {
         getSession(model, session);
 
-        List<Board> boardAll = boardService.findAll(); // boardService 사용하여 게시글 목록 가져오기
-        model.addAttribute("boardAll", boardAll);
-
+        List<Board> boardAll = boardService.findAll(); // 모든 게시글 가져오기
+        model.addAttribute("boardAll", boardAll); // 'boardAll' 키로 데이터 전달
         return "board";
     }
 
@@ -60,6 +58,17 @@ public class BoardController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류발생");
         }
+    }
+
+    @GetMapping("/board/{boardId}")
+    public String boardInfo(@PathVariable(name = "boardId") Long boardId, Model model, HttpSession session) {
+        Board byBoardId = boardService.findByBoardId(boardId);
+        eventPublisher.publishEvent(new ViewEvent(byBoardId)); // 조회 시 카운터 증가
+
+        getSession(model, session);
+
+        model.addAttribute("board", byBoardId);
+        return "boardInfo";
     }
 
     private static void getSession(Model model, HttpSession session) { // 로그인한 사용자 가져오기

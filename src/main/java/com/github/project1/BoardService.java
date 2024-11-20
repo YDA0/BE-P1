@@ -9,4 +9,6 @@ public interface BoardService {
 
     // 모든 게시글을 반환하는 메서드
     List<Board> findAll();
+
+    Board findByBoardId(Long boardId);
 }
