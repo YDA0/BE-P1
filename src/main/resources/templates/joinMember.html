@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>회원가입</title>
+</head>
+<style>
+  .error{
+    color: firebrick;
+  }
+</style>
+<body>
+<form th:action="@{/createMember}" method="post" th:object="${member}">
+  <div>
+    <label th:for="name">이름</label>
+    <input type="text" th:field="*{name}" placeholder="이름을 입력하세요">
+    <div class="error" th:errors="*{name}"></div>
+  </div>
+  <div>
+    <label th:for="email">아이디</label>
+    <input type="email" th:field="*{email}" placeholder="이메일을 입력하세요">
+    <div class="error" th:errors="*{email}"></div>
+  </div>
+  <div>
+    <label th:for="password">비밀번호</label>
+    <input type="password" th:field="*{password}" placeholder="비밀번호를 입력하세요">
+    <div class="error" th:errors="*{password}"></div>
+  </div>
+  <div>
+    <label th:for="phone_num">전화번호</label>
+    <input type="text" th:field="*{phoneNum}" placeholder="전화번호를 입력하세요">
+    <div class="error" th:errors="*{phoneNum}"></div>
+  </div>
+
+  <div>
+    <label th:for="address">주소</label>
+    <input type="text" th:field="*{address}" placeholder="주소를 입력하세요">
+    <div class="error" th:errors="*{address}"></div>
+  </div>
+  <button type="submit">회원가입하기</button>
+</form>
+</body>
+</html>
