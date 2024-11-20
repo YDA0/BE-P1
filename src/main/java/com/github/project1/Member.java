@@ -1,10 +1,14 @@
 package com.github.project1;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -16,7 +20,8 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT
-    private Long id;
+    @Column(name = "id")
+    private Long userId;
 
     @Column(nullable = false, length = 20) // VARCHAR(20)
     private String password;
@@ -32,4 +37,9 @@ public class Member {
 
     @Column(nullable = false, length = 100) // VARCHAR(100
     private String address;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "member")
+    private List<Board> boards = new ArrayList<>();
+
 }
