@@ -1,11 +1,9 @@
-package com.github.project1;
+package com.github.project1.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.project1.dto.BoardDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "member")
 public class Board {
 
     @Id

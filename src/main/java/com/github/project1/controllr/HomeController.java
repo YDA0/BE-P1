@@ -1,5 +1,6 @@
-package com.github.project1;
+package com.github.project1.controllr;
 
+import com.github.project1.entity.Member;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

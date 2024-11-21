@@ -1,6 +1,7 @@
-package com.github.project1;
+package com.github.project1.service;
 
-import jakarta.validation.Valid;
+import com.github.project1.entity.Board;
+import com.github.project1.dto.BoardDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

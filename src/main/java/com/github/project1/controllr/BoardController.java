@@ -1,5 +1,13 @@
-package com.github.project1;
+package com.github.project1.controllr;
 
+import com.github.project1.*;
+import com.github.project1.dto.BoardDto;
+import com.github.project1.dto.CommentDto;
+import com.github.project1.entity.Board;
+import com.github.project1.entity.Comment;
+import com.github.project1.entity.Member;
+import com.github.project1.service.BoardService;
+import com.github.project1.service.CommentService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -27,6 +35,7 @@ import java.util.Map;
 public class BoardController {
 
     private final BoardService boardService;
+    private final CommentService commentService;
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/board")
@@ -92,12 +101,17 @@ public class BoardController {
 
     @GetMapping("/board/{boardId}")
     public String boardInfo(@PathVariable(name = "boardId") Long boardId, Model model, HttpSession session) {
-        Board byBoardId = boardService.findByBoardId(boardId);
+        Board byBoardId = boardService.findByBoardId(boardId); // 특정 게시글 정보 조회
         eventPublisher.publishEvent(new ViewEvent(byBoardId)); // 조회 시 카운터 증가
+
+        List<Comment> allComment = commentService.findAllComment(boardId); // 조회수 값 조회
 
         getSession(model, session);
 
+        model.addAttribute("allComment", allComment);
+        model.addAttribute("comment", new CommentDto());
         model.addAttribute("board", byBoardId);
+
         return "boardInfo";
     }
 

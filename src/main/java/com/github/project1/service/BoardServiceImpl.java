@@ -1,5 +1,10 @@
-package com.github.project1;
+package com.github.project1.service;
 
+import com.github.project1.entity.Board;
+import com.github.project1.entity.Member;
+import com.github.project1.dto.BoardDto;
+import com.github.project1.repository.BoardRepository;
+import com.github.project1.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,7 +18,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class BoardServiceImpl implements BoardService{
+public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final MemberService memberService;

@@ -1,5 +1,6 @@
 package com.github.project1;
 
+import com.github.project1.entity.Board;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

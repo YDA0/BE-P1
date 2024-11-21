@@ -25,7 +25,7 @@
       contentType : "application/json",
       data : JSON.stringify(boardDto),
       success : function (response) {
-        alert("변경 성공");
+        alert("수정 완료");
         window.location.href="/board";
       }, error : function (xhr) {
         if (xhr.status === 500){

@@ -1,5 +1,6 @@
-package com.github.project1;
+package com.github.project1.dto;
 
+import com.github.project1.entity.Board;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

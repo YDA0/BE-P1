@@ -62,7 +62,7 @@
 <form method="get" th:action="@{/board}">
     <div class="col-6 d-flex justify-center">
         <label for="title" class="visually-hidden">검색</label>
-        <input type="text" class="form-control flex-grow-1 me-2" id="title" name="title" th:value="${title}" placeholder="게시글 제목으로 검색">
+        <input type="text" class="form-control flex-grow-1 me-2" id="title" name="title" th:value="${title}" placeholder="검색어를 입력하세요.">
         <button type="submit" class="btn btn-primary">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                 <path d="M11.742 10.742a6.5 6.5 0 1 0-1.417 1.417l4.268 4.267a1 1 0 0 0 1.415-1.415l-4.268-4.267zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -88,6 +88,7 @@
         </th>
         <td>
             <span th:text="${boards.title}"></span>
+            <span th:if="${boards.count != 0}" th:text="'(댓글 '+${boards.count+')'}" style="color: gray"></span>
         </td>
         <td th:text="${boards.writer}"></td>
         <td th:text="${#temporals.format(boards.dateTime, 'yyyy-MM-dd')}"></td>

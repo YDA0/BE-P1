@@ -1,5 +1,9 @@
-package com.github.project1;
+package com.github.project1.controllr;
 
+import com.github.project1.entity.Member;
+import com.github.project1.service.MemberService;
+import com.github.project1.dto.LoginDto;
+import com.github.project1.dto.MemberDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -37,6 +41,7 @@ public class MemberController {
         }
         // 회원가입 처리
         memberService.saveDto(memberDto);
+
         return "redirect:/login"; // 회원가입 성공 시 로그인 페이지로 이동
     }
 
@@ -63,7 +68,7 @@ public class MemberController {
             Member member = memberService.findByEmail(email);
             session.setAttribute("loginMember", member); // 로그인 후 세션에 정보 저장
 
-            // 저장된 이전 페이지 주소를 가져오고 기본값 설정
+            // 이전 페이지 URL 가져오고, 없으면 기본값 "/" 설정
             String prevPage = (String) request.getSession().getAttribute("prevPage");
             if (prevPage == null || prevPage.isEmpty()) {
                 prevPage = "/";

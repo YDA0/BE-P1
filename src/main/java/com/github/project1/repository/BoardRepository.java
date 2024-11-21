@@ -1,5 +1,6 @@
-package com.github.project1;
+package com.github.project1.repository;
 
+import com.github.project1.entity.Board;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
