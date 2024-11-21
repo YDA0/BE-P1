@@ -21,8 +21,10 @@
       };
 
       window.updateBoardPage = function () {
-        alert("수정 버튼 동작");
+        const boardId = document.getElementById('input_id').value; // 현재 게시글의 ID 가져오기
+        window.location.href = "/board/update/" + boardId; // boardUpdate.html로 이동
       };
+
 
       window.boardDelete = function () {
         alert("삭제 버튼 동작");

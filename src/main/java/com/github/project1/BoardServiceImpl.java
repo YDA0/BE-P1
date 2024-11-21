@@ -40,8 +40,15 @@ public class BoardServiceImpl implements BoardService{
 
     public Board findByBoardId(Long boardId) {
         try{
-            return boardRepository.findById(boardId)
+            Board board = boardRepository.findById(boardId)
                     .orElseThrow(() -> new RuntimeException("Board not found with ID: " + boardId));
+
+            // views가 null일 경우 0으로 설정
+            if (board.getViews() == null) {
+                board.setViews(0);
+            }
+
+            return board;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error while finding Board with ID: " + e);
@@ -49,9 +56,31 @@ public class BoardServiceImpl implements BoardService{
     }
 
     public Board countViews(Long boardId) {
-        Board byBoardId = findByBoardId(boardId);
-        Integer views = byBoardId.getViews();
-        byBoardId.setViews(++views);
-        return boardRepository.save(byBoardId);
+        Board board = findByBoardId(boardId);
+
+        // views가 null일 경우 0으로 초기화하고 증가
+        if (board.getViews() == null) {
+            board.setViews(0);
+        }
+
+        Integer views = board.getViews();
+        board.setViews(++views);
+        return boardRepository.save(board);
+    }
+
+    @Override
+    public Board updateBoard(BoardDto boardDto) {
+        // 기존 게시글 가져오기
+        Board existingBoard = findByBoardId(boardDto.getBoardId());
+
+        // DTO를 사용해 기존 엔티티를 업데이트
+        boardDto.setWriter(existingBoard.getWriter()); // 작성자 유지
+        boardDto.setDateTime(existingBoard.getDateTime()); // 작성일 유지
+        boardDto.setViews(existingBoard.getViews()); // 조회수 유지
+
+        boardDto.updateEntity(existingBoard);
+
+        // 저장 후 반환
+        return boardRepository.save(existingBoard);
     }
 }

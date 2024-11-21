@@ -71,6 +71,30 @@ public class BoardController {
         return "boardInfo";
     }
 
+    @GetMapping("/board/update/{id}")
+    public String updateGetBoard(@PathVariable(name = "id") Long id, Model model) {
+        Board byBoardId = boardService.findByBoardId(id);
+        model.addAttribute("board", byBoardId);
+        return "boardUpdate";
+    }
+
+    @PutMapping("/board/update/{id}")
+    @ResponseBody
+    public ResponseEntity<?> updateBoardAfter(@PathVariable(name = "id") Long id, @Valid @RequestBody BoardDto boardDto) {
+        try {
+            // boardDto에 id 값을 직접 세팅하여 서비스에 전달
+            boardDto.setBoardId(id);  // PathVariable로 받은 id를 boardDto에 설정
+
+            // boardService를 통해 업데이트
+            Board updatedBoard = boardService.updateBoard(boardDto);
+            return ResponseEntity.ok(updatedBoard);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류 발생");
+        }
+    }
+
+
     private static void getSession(Model model, HttpSession session) { // 로그인한 사용자 가져오기
         Member loginMember = (Member) session.getAttribute("loginMember");
         model.addAttribute("loginMember", loginMember);

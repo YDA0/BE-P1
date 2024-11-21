@@ -1,5 +1,7 @@
 package com.github.project1;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 public interface BoardService {
@@ -10,5 +12,9 @@ public interface BoardService {
     // 모든 게시글을 반환하는 메서드
     List<Board> findAll();
 
+    // 특정 게시글 ID를 사용하여 게시글 조회
     Board findByBoardId(Long boardId);
+
+    // 게시글 수정 메서드 (BoardDto를 받아서 수정)
+    Board updateBoard(BoardDto boardDto);
 }
