@@ -6,6 +6,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,12 +30,38 @@ public class BoardController {
     private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/board")
-    public String board(Model model, HttpSession session) {
+    public String board(
+            Model model,
+            @PageableDefault(size = 4) Pageable pageable,
+            @RequestParam(required = false, defaultValue = "") String title,
+            HttpSession session
+    ) {
+        // 세션 정보 가져오기
         getSession(model, session);
 
-        List<Board> boardAll = boardService.findAll(); // 모든 게시글 가져오기
-        model.addAttribute("boardAll", boardAll); // 'boardAll' 키로 데이터 전달
-        return "board";
+        // 검색 및 페이징 처리
+        Page<Board> boards = boardService.search(title, pageable); // 검색어가 없는 경우 모든 데이터 반환
+        List<Board> boardAll = boards.getContent(); // 현재 페이지에 해당하는 데이터
+
+        // 페이징 관련 정보 계산
+        int currentPage = boards.getPageable().getPageNumber() + 1;
+        int totalPages = boards.getTotalPages();
+        int visiblePages = 3;
+        int startPage = Math.max(1, currentPage - visiblePages / 2);
+        int endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+        // 검색 결과가 있을 경우 추가
+        if (boardAll != null) {
+            model.addAttribute("boardAll", boardAll);
+        }
+
+        // 페이징 및 검색 관련 속성 추가
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("page", boards);
+        model.addAttribute("title", title); // 검색어 필드 유지
+
+        return "board"; // board.html 템플릿 반환
     }
 
     @GetMapping("/boardWrite")
@@ -111,7 +140,6 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시물이 존재하지 않습니다.");
         }
     }
-
 
     private static void getSession(Model model, HttpSession session) { // 로그인한 사용자 가져오기
         Member loginMember = (Member) session.getAttribute("loginMember");

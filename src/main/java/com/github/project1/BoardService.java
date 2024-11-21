@@ -1,6 +1,8 @@
 package com.github.project1;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -19,4 +21,6 @@ public interface BoardService {
     Board updateBoard(BoardDto boardDto);
 
     boolean deleteBoard(Long id, String memberEmail);
+
+    Page<Board> search(String title, Pageable pageable);
 }
