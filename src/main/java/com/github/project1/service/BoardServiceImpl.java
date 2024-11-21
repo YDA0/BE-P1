@@ -4,6 +4,7 @@ import com.github.project1.entity.Board;
 import com.github.project1.entity.Member;
 import com.github.project1.dto.BoardDto;
 import com.github.project1.repository.BoardRepository;
+import com.github.project1.repository.CommentRepository;
 import com.github.project1.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -22,6 +24,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
+    private final CommentRepository commentRepository;
 
     @Override
     public Board save(BoardDto boardDto) {
@@ -46,7 +49,7 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.findAll();
     }
 
-
+    @Override
     public Board findByBoardId(Long boardId) {
         try{
             Board board = boardRepository.findById(boardId)
@@ -95,15 +98,27 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public boolean deleteBoard(Long boardId, String memberEmail) {
+        // 회원 찾기
         Member byEmail = memberService.findByEmail(memberEmail);
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new EntityNotFoundException("게시물이 존재하지 않습니다. ID: " + boardId));
 
+        // 게시글 찾기
+        Optional<Board> optionalBoard = boardRepository.findById(boardId);
+        if (!optionalBoard.isPresent()) {
+            throw new EntityNotFoundException("게시물이 존재하지 않습니다. ID: " + boardId);
+        }
+
+        Board board = optionalBoard.get();
+
+        // 작성자 확인
         String writer = board.getWriter();
         if (writer == null || !writer.equals(memberEmail)) {
             throw new IllegalArgumentException("삭제 권한이 없습니다.");
         }
 
+        // 댓글 먼저 삭제
+        commentRepository.deleteByBoardId(boardId);
+
+        // 게시글 삭제
         boardRepository.deleteById(boardId);
         return true;
     }

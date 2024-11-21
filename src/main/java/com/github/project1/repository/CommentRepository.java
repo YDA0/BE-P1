@@ -2,6 +2,7 @@ package com.github.project1.repository;
 
 import com.github.project1.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
         @Query("SELECT COUNT(c) from Comment c where c.board.boardId = :boardId")
         Integer countComment(@Param("boardId") Long boardId);
 
+        @Modifying
+        @Query("delete from Comment c where c.board.boardId = :boardId")
+        void deleteByBoardId(@Param("boardId") Long boardId);
 }

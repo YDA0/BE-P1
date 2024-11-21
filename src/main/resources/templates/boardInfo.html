@@ -108,6 +108,103 @@
           alert("로그인 후 댓글을 작성할 수 있습니다.");
         }
       };
+
+      // 댓글 수정 모달 열기
+      window.openCommentModal = function (commentId) {
+        const commentContentElement = document.getElementById('comment_content');
+        if (commentContentElement) {
+          const commentContent = commentContentElement.innerText;
+          document.getElementById('comment_id').value = commentId; // 댓글 ID 설정
+          document.getElementById('edited_comment').value = commentContent; // 댓글 내용 설정
+          document.getElementById('commentModal').style.display = 'block'; // 모달 열기
+        } else {
+          alert("댓글 내용을 찾을 수 없습니다.");
+        }
+      };
+
+      // 댓글 수정 모달 창 닫기
+      window.closeCommentModal = function () {
+        document.getElementById('commentModal').style.display = 'none';
+      };
+
+      // 댓글 수정 저장
+      window.saveEditedComment = function () {
+        const commentId = document.getElementById('comment_id').value;
+        const loginEmail = document.getElementById('loginMember_email').value;
+        const editedComment = document.getElementById('edited_comment').value;
+
+        const dto = {
+          id: commentId,
+          content: editedComment,
+          memberDto: {
+            email: loginEmail
+          }
+        };
+
+        $.ajax({
+          url: "/board/comment/update",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(dto),
+          success: function () {
+            alert("댓글 수정 성공");
+            window.closeCommentModal(); // 모달 닫기
+            location.reload(); // 페이지 새로고침
+          },
+          error: function (xhr) {
+            try {
+              const errorMap = JSON.parse(xhr.responseText);
+              alert(errorMap.message || "댓글 수정 중 오류 발생");
+            } catch {
+              alert("댓글 수정 중 알 수 없는 오류가 발생했습니다.");
+            }
+          }
+        });
+      };
+
+      // 댓글 삭제
+      window.deleteComment = function (commentId) {
+        const loginElement = document.getElementById('loginMember_email');
+
+        if (!loginElement || !loginElement.value) {
+          alert("로그인 후 이용할 수 있습니다.");
+          return; // 로그인되지 않으면 종료
+        }
+
+        const loginEmail = loginElement.value;
+
+        const commentConfirm = confirm("정말로 삭제하시겠습니까?");
+        if (commentConfirm) {
+          const dto = {
+            id: commentId,
+            memberDto: {
+              email: loginEmail
+            }
+          };
+
+          $.ajax({
+            url: "/delete/comment",
+            method: "DELETE",
+            contentType: "application/json",
+            data: JSON.stringify(dto),
+            success: function () {
+              alert("삭제 성공");
+              location.reload();
+            },
+            error: function (xhr) {
+              if (xhr.status === 500) {
+                const errorMessage = JSON.parse(xhr.responseText);
+                $.each(errorMessage, function (key, value) {
+                  if (key === "message") {
+                    alert(value);
+                  }
+                });
+              }
+            }
+          });
+        }
+      };
+
     });
   </script>
 
@@ -199,13 +296,8 @@
           <div th:if="${comment.member == null}" style="font-weight: bold;color: #0D0D0D">알 수 없음</div>
           <div id="comment_content" th:text="${comment.content}"/>
           <div th:text="${#temporals.format(comment.dateTime, 'yyyy-MM-dd HH:mm:ss')}" style="font-size: 10px"/>
-          <button style="font-size: 8px">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
-              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-            </svg>
-          </button>
-          <button type="button" style="padding: 0;"></button>
+          <button type="button" th:onclick="deleteComment([[${comment.id}]])">삭제</button>
+          <button type="button" th:onclick="openCommentModal([[${comment.id}]])">수정</button>
         </td>
       </tr>
       </tbody>
@@ -218,8 +310,18 @@
       <br>
       <button onclick="boardComment()">댓글 작성</button>
     </div>
-
   </div>
+
+  <!--  게시판 댓글 수정 모달창-->
+  <div id="commentModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeCommentModal()">&times;</span>
+      <label for="edited_comment">댓글 수정:</label>
+      <textarea id="edited_comment" rows="5" cols="80"></textarea>
+      <button onclick="saveEditedComment()">저장</button>
+    </div>
+  </div>
+
 </div>
   <input type="hidden" id="input_id" th:value="*{boardId}">
   <input th:if="${loginMember != null}" type="hidden" id="loginMember_email" th:value="${loginMember.email}">

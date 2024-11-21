@@ -12,4 +12,8 @@ public interface CommentService {
     List<Comment> findAllComment(Long boardId);
 
     Integer countComment(Long boardId);
+
+    void updateComment(CommentDto commentDto);
+
+    void deleteComment(CommentDto commentDto);
 }
