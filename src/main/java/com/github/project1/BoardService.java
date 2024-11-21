@@ -17,4 +17,6 @@ public interface BoardService {
 
     // 게시글 수정 메서드 (BoardDto를 받아서 수정)
     Board updateBoard(BoardDto boardDto);
+
+    boolean deleteBoard(Long id, String memberEmail);
 }

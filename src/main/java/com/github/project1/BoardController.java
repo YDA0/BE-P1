@@ -1,5 +1,6 @@
 package com.github.project1;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -91,6 +92,23 @@ public class BoardController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류 발생");
+        }
+    }
+
+    @DeleteMapping("/delete")
+    @ResponseBody
+    public ResponseEntity<?> boardDelete(@RequestBody BoardDto boardDto) {
+        try{
+            Long id = boardDto.getBoardId();
+            String memberEmail = boardDto.getMemberDto().getEmail();
+            boolean deleteBoard = boardService.deleteBoard(id, memberEmail);
+            if (!deleteBoard) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("등록된 사용자만 삭제 가능");
+            }
+            return ResponseEntity.ok("삭제 성공");
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시물이 존재하지 않습니다.");
         }
     }
 

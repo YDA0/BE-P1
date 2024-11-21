@@ -1,11 +1,13 @@
 package com.github.project1;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -13,6 +15,7 @@ import java.util.List;
 public class BoardServiceImpl implements BoardService{
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Override
     public Board save(BoardDto boardDto) {
@@ -82,5 +85,20 @@ public class BoardServiceImpl implements BoardService{
 
         // 저장 후 반환
         return boardRepository.save(existingBoard);
+    }
+
+    @Override
+    public boolean deleteBoard(Long boardId, String memberEmail) {
+        Member byEmail = memberService.findByEmail(memberEmail);
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new EntityNotFoundException("게시물이 존재하지 않습니다. ID: " + boardId));
+
+        String writer = board.getWriter();
+        if (writer == null || !writer.equals(memberEmail)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
+
+        boardRepository.deleteById(boardId);
+        return true;
     }
 }
