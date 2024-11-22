@@ -72,6 +72,12 @@
           const content = document.getElementById('comment_text').value;
           const loginEmail = document.getElementById('loginMember_email').value;
 
+          // 댓글 내용이 비어있으면 경고창 표시
+          if (!content) {
+            alert("댓글 내용은 필수 입력 사항입니다.");
+            return; // 함수 종료
+          }
+
           const dto = {
             content: content,
             boardDto: {

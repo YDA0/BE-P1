@@ -21,6 +21,10 @@ public class CommentController {
     @PostMapping("/board/comment")
     public ResponseEntity<?> createComment(@RequestBody CommentDto commentDto) {
         try {
+            // 댓글이 비어있으면 오류 반환
+            if (commentDto.getContent() == null || commentDto.getContent().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("내용은 필수 입력 사항입니다.");
+            }
             commentService.save(commentDto);
             return ResponseEntity.ok("댓글이 성공적으로 작성되었습니다.");
         } catch (Exception e) {
