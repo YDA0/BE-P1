@@ -42,7 +42,7 @@ public class MemberController {
         // 회원가입 처리
         memberService.saveDto(memberDto);
 
-        return "redirect:/login"; // 회원가입 성공 시 로그인 페이지로 이동
+        return "redirect:/"; // 회원가입 성공 시 로그인 페이지로 이동
     }
 
     // 로그인 폼 표시
